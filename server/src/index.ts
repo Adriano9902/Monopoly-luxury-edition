@@ -9,6 +9,10 @@ import { ClientAction } from './types';
 const app = express();
 app.use(cors());
 
+app.get('/', (_req, res) => {
+  res.status(200).send('Monopoly Luxury Edition Server is running');
+});
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -59,7 +63,7 @@ io.on('connection', (socket: Socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
