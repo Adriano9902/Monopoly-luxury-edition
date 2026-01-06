@@ -3,7 +3,8 @@ import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { GameState, Tile, Player, TileType } from '../types';
 import { COLORS } from '../constants';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 const SYSTEM_INSTRUCTION = `
 Sei "The Oracle", l'IA di trading algoritmico e consulente strategico supremo di "Monopoly Business & Lusso: Extreme Edition".
@@ -135,6 +136,7 @@ const analyzePortfolio = (player: Player, gameState: GameState) => {
 
 export const getTurnCommentary = async (player: Player, action: string, tile: Tile, gameState: GameState): Promise<string> => {
   try {
+    if (!ai) return "Analisi di mercato non disponibile: API Key assente.";
     const analysis = analyzePortfolio(player, gameState);
     
     let specificTileContext = "";
@@ -198,6 +200,12 @@ export const getTurnCommentary = async (player: Player, action: string, tile: Ti
 
 export const generateGlobalEvent = async (gameState: GameState): Promise<{ title: string, description: string, effectLabel: string, actionType: 'TAX_ALL' | 'GIVE_MONEY_ALL' | 'CHAOS_MOVE' }> => {
   try {
+    if (!ai) return {
+      title: "Mercato Stabile",
+      description: "Nessun evento globale per assenza API.",
+      effectLabel: "Nessun impatto",
+      actionType: 'GIVE_MONEY_ALL'
+    };
     const prompt = `Genera un evento globale di mercato per Monopoly Extreme Edition che causi un impatto immediato.`;
     
     const response = await ai.models.generateContent({
@@ -280,6 +288,7 @@ export const speakText = async (text: string) => {
   if (!clean) return;
 
   try {
+    if (!ai) return;
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-preview-tts',
       contents: [{ parts: [{ text: clean }] }],
