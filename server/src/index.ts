@@ -194,7 +194,7 @@ app.get('*', (_req, res) => {
   res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+const PORT = parseInt(process.env.PORT || '3000', 10);
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server listening on port ${PORT} and host 0.0.0.0`);
 });
