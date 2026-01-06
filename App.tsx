@@ -6,7 +6,7 @@ import PurchaseModal from './components/PurchaseModal';
 import AuctionModal from './components/AuctionModal';
 import CardModal from './components/CardModal';
 import StartAnimation from './components/StartAnimation';
-import { GameState, ClientAction } from './types';
+import { GameState, ClientAction, PlayerConfig } from './types';
 import { multiplayerService } from './services/multiplayerService';
 import { getTurnCommentary } from './services/geminiService';
 import { IconOracle } from './components/Icons';
