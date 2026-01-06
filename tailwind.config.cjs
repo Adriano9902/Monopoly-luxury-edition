@@ -8,21 +8,28 @@ module.exports = {
     extend: {
       colors: {
         gold: {
-          100: '#fbf5db',
-          200: '#f5e6a8',
-          300: '#edd071',
-          400: '#e4b63e',
-          500: '#d99a1c',
-          600: '#b87913',
-          700: '#935812',
-          800: '#794615',
-          900: '#643a16',
+          100: '#fcf6ba', // Champagne Light
+          200: '#fbf5b7', // Pale Gold
+          300: '#bf953f', // Classic Gold
+          400: '#aa771c', // Dark Gold
+          500: '#d99a1c', // Base (legacy support)
+          600: '#b38728', // Metallic Shadow
+          700: '#8a6e2f', // Antique Bronze
+          800: '#4a3b18', // Deep Bronze
+          900: '#2a1d0a', // Darkest Amber
         },
         luxury: {
-          dark: '#050505',
-          blue: '#0a1128',
-          card: '#121212'
+          black: '#050505',   // Rich Black (not #000)
+          charcoal: '#0f0f11', // Warm Graphite
+          obsidian: '#0a0a0c', // Deep Blue-Black
+          card: '#141414',     // Surface Color
+          glass: 'rgba(15, 15, 17, 0.6)', // Premium Glass
         },
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gold-gradient': 'linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%)',
+        'gold-text': 'linear-gradient(to bottom, #fcf6ba, #bf953f, #aa771c)',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

@@ -58,12 +58,12 @@ const TileComponent: React.FC<TileProps> = ({
 
   return (
     <div 
-      className={`w-full h-full relative transition-all duration-300 border bg-[#050505] overflow-visible group/inner
+      className={`w-full h-full relative transition-all duration-300 border overflow-hidden group/inner
         ${side === 'bottom' ? 'flex flex-col' : ''}
         ${side === 'top' ? 'flex flex-col-reverse' : ''}
         ${side === 'left' ? 'flex flex-row-reverse' : ''}
         ${side === 'right' ? 'flex flex-row' : ''}
-        ${side === 'corner' ? 'flex flex-col justify-center' : ''}
+        ${side === 'corner' ? 'flex flex-col justify-center bg-[#0a0a0a]' : 'bg-[#080808]'}
         ${tile.mortgaged ? 'grayscale opacity-50' : ''}
       `}
       style={containerStyle}
@@ -74,56 +74,62 @@ const TileComponent: React.FC<TileProps> = ({
         if (pid && onPlayerDrop) onPlayerDrop(parseInt(pid));
       }}
     >
-      {/* Texture di fondo */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none"></div>
+      {/* Texture di fondo elegante */}
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] pointer-events-none"></div>
+      
+      {/* Glow effect al passaggio del mouse */}
+      <div className="absolute inset-0 opacity-0 group-hover/tile:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-gold-500/10 to-transparent pointer-events-none"></div>
 
-      {/* Barra Colore Proprietà */}
+      {/* Barra Colore Proprietà con effetto vetro */}
       {hasColorBar && (
         <div 
-          className={`shrink-0 z-20 shadow-inner border-black/10 
-            ${isVerticalSide ? 'h-[22%] w-full' : 'w-[22%] h-full'}
+          className={`shrink-0 z-20 shadow-[0_0_10px_rgba(0,0,0,0.5)] border-black/20 backdrop-blur-sm relative overflow-hidden
+            ${isVerticalSide ? 'h-[22%] w-full border-b' : 'w-[22%] h-full border-r'}
           `} 
           style={{ backgroundColor: tile.color }}
-        ></div>
+        >
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+        </div>
       )}
 
-      {/* Area Contenuto - Ottimizzata per lettura orizzontale */}
-      <div className={`flex-1 flex overflow-visible relative z-10 p-0.5
+      {/* Area Contenuto - Ottimizzata */}
+      <div className={`flex-1 flex relative z-10 p-0.5
         ${isVerticalSide ? 'flex-col items-center justify-between' : 'flex-row items-center justify-between px-1'}
         ${side === 'corner' ? 'flex-col items-center justify-center p-2' : ''}
       `}>
         
-        {/* Nome Asset - Sempre orizzontale, adattivo */}
-        <div className={`flex items-center justify-center overflow-visible
+        {/* Nome Asset */}
+        <div className={`flex items-center justify-center
           ${isVerticalSide ? 'w-full h-auto min-h-[35%]' : 'w-[45%] h-full'}
           ${side === 'corner' ? 'h-auto mb-2' : ''}
         `}>
-          <span className={`font-sans font-black uppercase text-white tracking-tighter text-center leading-[0.9]
-            ${side === 'corner' ? 'text-[0.65rem]' : isHorizontalSide ? 'text-[0.45rem] md:text-[0.55rem]' : 'text-[0.45rem] md:text-[0.52rem] px-0.5'} 
-            group-hover/tile:text-gold-200 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]
-          `}>
-            {tile.name}
-          </span>
+             <span className={`text-[9px] md:text-[10px] leading-tight font-black uppercase text-center tracking-tighter text-slate-200 drop-shadow-md
+                ${isHorizontalSide ? 'rotate-90 whitespace-nowrap' : ''}
+             `}>
+                {tile.name}
+             </span>
         </div>
 
-        {/* Icona Centrale - Centrata nel rimanente spazio */}
-        <div className={`flex items-center justify-center flex-1 min-w-0 min-h-0
-           ${isHorizontalSide ? 'w-auto' : 'w-full'}
-        `}>
-          <div className="transform transition-transform duration-300 group-hover/tile:scale-125">
-            {renderIcon(side === 'corner' ? "w-10 h-10" : "w-6 h-6")}
-          </div>
-        </div>
+        {/* Icona Centrale (se presente) */}
+        {tile.customStyle?.icon || renderIcon() ? (
+             <div className="flex-1 flex items-center justify-center opacity-80 group-hover/tile:scale-110 transition-transform duration-300">
+                {tile.customStyle?.icon ? (
+                    <span className="text-xl filter drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">{tile.customStyle.icon}</span>
+                ) : renderIcon()}
+             </div>
+        ) : <div className="flex-1"></div>}
 
-        {/* Tag Prezzo - Sempre leggibile */}
-        {tile.price && side !== 'corner' && (
-          <div className={`flex items-center justify-center shrink-0
-            ${isVerticalSide ? 'w-full mt-auto' : 'w-[22%] h-full ml-1'}
-          `}>
-            <span className="text-[0.45rem] md:text-[0.55rem] font-mono text-emerald-400 font-black tracking-tighter opacity-90 group-hover/tile:opacity-100 group-hover/tile:scale-110 transition-all">
-              ${tile.price}M
-            </span>
-          </div>
+        {/* Prezzo */}
+        {tile.price && (
+            <div className={`flex items-center justify-center
+                ${isVerticalSide ? 'mb-0.5' : 'mr-0.5'}
+            `}>
+                <span className={`font-mono text-[9px] font-bold text-gold-400
+                     ${isHorizontalSide ? 'rotate-90' : ''}
+                `}>
+                    ${tile.price}M
+                </span>
+            </div>
         )}
       </div>
 
@@ -138,26 +144,7 @@ const TileComponent: React.FC<TileProps> = ({
         </div>
       )}
 
-      {/* Pedine Giocatori - Rendering pulito sopra lo zoom */}
-      {playersOnTile.length > 0 && (
-        <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
-          <div className="flex -space-x-3 filter drop-shadow-[0_4px_12px_rgba(0,0,0,1)] group-hover/tile:scale-50 transition-transform duration-300">
-            {playersOnTile.map(p => (
-              <div 
-                key={p.id} 
-                className="w-8 h-8 md:w-9 md:h-9 animate-bounce pointer-events-auto cursor-grab active:cursor-grabbing" 
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.setData('playerId', p.id.toString());
-                  e.dataTransfer.effectAllowed = 'move';
-                }}
-              >
-                <PlayerTokenIcon token={p.token} className="w-full h-full" />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Pedine Giocatori - Rimosse da qui, ora gestite nel layer globale in Board.tsx */}
     </div>
   );
 };

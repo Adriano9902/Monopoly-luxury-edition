@@ -4,6 +4,7 @@ import { GameState, TransferInfo, TileType, Card } from '../types';
 import { GAME_TILES } from '../constants';
 import TileComponent from './TileComponent';
 import Dice from './Dice';
+import { PlayerTokenIcon } from './Icons';
 
 interface BoardProps {
   gameState: GameState;
@@ -21,6 +22,58 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onManualStep, act
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const targetNextPos = currentPlayer ? (currentPlayer.position + 1) % 60 : -1;
+
+  // Helper per calcolare la posizione centrale di una casella (0-100%)
+  const getTileCenter = (index: number) => {
+    // Normalizza index
+    const i = index % 60;
+    
+    // Costanti per centri
+    const CENTER_CORNER = CORNER_SIZE / 2;
+    const CENTER_EDGE = 100 - (CORNER_SIZE / 2);
+    
+    // Bottom Side (0-15)
+    if (i >= 0 && i <= 15) {
+      const y = CENTER_EDGE;
+      if (i === 0) return { x: CENTER_EDGE, y }; // Bottom Right
+      if (i === 15) return { x: CENTER_CORNER, y }; // Bottom Left
+      // 1-14: Right to Left
+      const offset = (i - 1) * TILE_BREADTH + (TILE_BREADTH / 2);
+      const x = 100 - CORNER_SIZE - offset;
+      return { x, y };
+    }
+    
+    // Left Side (16-30)
+    if (i > 15 && i <= 30) {
+      const x = CENTER_CORNER;
+      if (i === 30) return { x, y: CENTER_CORNER }; // Top Left
+      // 16-29: Bottom to Top
+      const offset = (i - 16) * TILE_BREADTH + (TILE_BREADTH / 2);
+      const y = 100 - CORNER_SIZE - offset;
+      return { x, y };
+    }
+    
+    // Top Side (31-45)
+    if (i > 30 && i <= 45) {
+      const y = CENTER_CORNER;
+      if (i === 45) return { x: CENTER_EDGE, y }; // Top Right
+      // 31-44: Left to Right
+      const offset = (i - 31) * TILE_BREADTH + (TILE_BREADTH / 2);
+      const x = CORNER_SIZE + offset;
+      return { x, y };
+    }
+    
+    // Right Side (46-59)
+    if (i > 45) {
+      const x = CENTER_EDGE;
+      // 46-59: Top to Bottom
+      const offset = (i - 46) * TILE_BREADTH + (TILE_BREADTH / 2);
+      const y = CORNER_SIZE + offset;
+      return { x, y };
+    }
+    
+    return { x: 50, y: 50 };
+  };
 
   const renderTiles = useMemo(() => {
     return GAME_TILES.map((tile, i) => {
@@ -159,6 +212,51 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onManualStep, act
       </div>
 
       {renderTiles}
+
+      {/* PLAYER TOKEN LAYER - Global Animation System */}
+      <div className="absolute inset-0 z-[200] pointer-events-none">
+        {gameState.players.map((p, idx) => {
+          const { x, y } = getTileCenter(p.position);
+          // Offset per overlapping players (spiral or grid)
+          const playersOnSameTile = gameState.players.filter(pl => pl.position === p.position);
+          let offsetX = 0;
+          let offsetY = 0;
+          
+          if (playersOnSameTile.length > 1) {
+             const playerIndexOnTile = playersOnSameTile.findIndex(pl => pl.id === p.id);
+             const angle = (360 / playersOnSameTile.length) * playerIndexOnTile;
+             const radius = 1.2; // %
+             offsetX = Math.cos(angle * Math.PI / 180) * radius;
+             offsetY = Math.sin(angle * Math.PI / 180) * radius;
+          }
+
+          return (
+            <div
+              key={p.id}
+              className="absolute w-8 h-8 md:w-10 md:h-10 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-auto cursor-grab active:cursor-grabbing hover:scale-125 hover:z-[100] drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]"
+              style={{
+                left: `${x + offsetX}%`,
+                top: `${y + offsetY}%`,
+                transform: 'translate(-50%, -50%)',
+                zIndex: 60 + idx
+              }}
+              draggable
+              onDragStart={(e) => {
+                  if (onPlayerDrag) {
+                    e.dataTransfer.setData('playerId', p.id.toString());
+                    e.dataTransfer.effectAllowed = 'move';
+                  }
+              }}
+            >
+              <PlayerTokenIcon token={p.token} className="w-full h-full filter drop-shadow-lg" />
+              {/* Turn Indicator */}
+              {gameState.currentPlayerIndex === idx && (
+                <div className="absolute -inset-2 border-2 border-gold-400 rounded-full animate-ping opacity-50 pointer-events-none"></div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

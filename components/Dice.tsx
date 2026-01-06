@@ -93,11 +93,46 @@ const Dice: React.FC<DiceProps> = ({ value, isRolling, type = 'STANDARD' }) => {
   };
 
   return (
-    <div className="w-24 h-24 relative flex items-center justify-center perspective-1000 group">
+    <div className={`w-24 h-24 relative flex items-center justify-center perspective-1000 group transition-transform duration-500 ${isRolling ? 'scale-110' : 'scale-100'}`}>
       
       {/* Styles Injected Locally for high-fidelity gradients */}
       <style>{`
         /* --- STANDARD: Gold Bar Aesthetic --- */
+        .dice-standard {
+          background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+          border: 1px solid rgba(255, 215, 0, 0.5);
+          box-shadow: 
+            inset 0 0 15px rgba(255, 255, 255, 0.4),
+            0 0 20px rgba(218, 165, 32, 0.3);
+        }
+        .dice-standard .pip {
+          background: radial-gradient(circle at 30% 30%, #000000, #333333);
+          box-shadow: inset 0 0 2px rgba(255,255,255,0.5);
+          width: 80%; height: 80%; border-radius: 50%;
+        }
+
+        /* --- TRUFFA: Neon Purple Cyberpunk --- */
+        .dice-truffa {
+          background: radial-gradient(circle at 30% 30%, #d8b4fe, #7e22ce);
+          border: 1px solid rgba(168, 85, 247, 0.6);
+          box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+        }
+        .dice-truffa .pip {
+          background: #ffffff;
+          box-shadow: 0 0 5px #a855f7;
+          width: 80%; height: 80%; border-radius: 50%;
+        }
+
+        /* --- BUSINESS: Corporate Blue Glass --- */
+        .dice-business {
+          background: radial-gradient(circle at 30% 30%, #e0f2fe, #0ea5e9);
+          border: 1px solid rgba(14, 165, 233, 0.5);
+        }
+        .dice-business .pip {
+          background: #0f172a;
+          width: 80%; height: 80%; border-radius: 20%; /* Square pips */
+        }
+
         .dice-standard .face {
           background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
           border: 1px solid #aa771c;

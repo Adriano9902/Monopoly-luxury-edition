@@ -27,8 +27,8 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ tile, player, onBuy, onAu
   }, [tile.ownerId, player.id, onClose]);
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md bg-[#0a0a0a] border border-gold-500/50 rounded-lg shadow-[0_0_100px_rgba(217,154,28,0.2)] overflow-hidden flex flex-col animate-slide-up">
+    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center md:p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full h-[85vh] md:h-auto md:max-w-md bg-[#0a0a0a] border-t md:border border-gold-500/50 rounded-t-2xl md:rounded-lg shadow-[0_0_100px_rgba(217,154,28,0.2)] overflow-hidden flex flex-col animate-slide-up">
         
         {/* Decorative Background Elements */}
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] opacity-20 pointer-events-none"></div>

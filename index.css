@@ -1,3 +1,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-luxury-black text-slate-200 selection:bg-gold-400/30 selection:text-gold-100;
+  }
+}
+
+@layer utilities {
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+  
+  .text-gold-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-b from-gold-100 via-gold-300 to-gold-600;
+    text-shadow: 0 2px 10px rgba(191, 149, 63, 0.2);
+  }
+  
+  .text-gold-shine {
+    background: linear-gradient(to right, #bf953f 20%, #fcf6ba 50%, #bf953f 80%);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shine 6s linear infinite;
+  }
+  
+  .border-luxury {
+    @apply border border-white/5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)];
+  }
+  
+  .card-luxury {
+    @apply bg-luxury-card/90 backdrop-blur-xl border border-white/5;
+    box-shadow: 
+      0 20px 50px -12px rgba(0, 0, 0, 0.9),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 0 40px rgba(0,0,0,0.5) inset;
+  }
+  
+  .btn-luxury {
+    @apply relative overflow-hidden transition-all duration-300;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+  }
+  
+  .btn-luxury::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255,255,255,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .btn-luxury:hover::after {
+    opacity: 1;
+  }
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}

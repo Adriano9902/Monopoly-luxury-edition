@@ -13,9 +13,11 @@ import { IconOracle } from './components/Icons';
 
 import GameLayout from './components/GameLayout';
 import PlayerHUD from './components/PlayerHUD';
+import DebugPanel from './components/DebugPanel';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState | null>(null);
+  const [showDebug, setShowDebug] = useState(false);
   const [connected, setConnected] = useState(false);
   const [gameId, setGameId] = useState<string | null>(null);
   const [playerId, setPlayerId] = useState<number | null>(null);
@@ -94,6 +96,28 @@ const App: React.FC = () => {
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isMyTurn = currentPlayer?.id === playerId;
   const currentTile = gameState.tiles[currentPlayer.position];
+
+  const handleDebugAction = (action: string) => {
+    if (!gameState) return;
+    const newState = JSON.parse(JSON.stringify(gameState));
+    const pIdx = newState.currentPlayerIndex;
+    const player = newState.players[pIdx];
+
+    switch(action) {
+        case 'move_1': player.position = (player.position + 1) % 60; break;
+        case 'move_5': player.position = (player.position + 5) % 60; break;
+        case 'move_random': player.position = Math.floor(Math.random() * 60); break;
+        case 'teleport_jail': player.position = 15; break;
+        case 'money_add': player.money += 100; break;
+        case 'money_sub': player.money -= 100; break;
+        case 'modal_purchase': setShowPurchaseModal(true); break;
+        case 'modal_auction': 
+             newState.auctionState = { isActive: true, propertyId: 1, currentBid: 50, highestBidderId: player.id, activeBidders: [player.id], timeLeft: 30 };
+             break;
+        case 'toast_error': setError("Simulation Error: Connection Lost"); break;
+    }
+    setGameState(newState);
+  };
 
   return (
     <>
@@ -212,6 +236,12 @@ const App: React.FC = () => {
                 {showStartAnimation && <StartAnimation />}
             </>
         }
+      />
+      
+      <DebugPanel 
+        isVisible={showDebug} 
+        onToggle={() => setShowDebug(!showDebug)} 
+        onAction={handleDebugAction} 
       />
     </>
   );

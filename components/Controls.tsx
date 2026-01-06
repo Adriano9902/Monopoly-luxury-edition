@@ -56,17 +56,18 @@ const Controls: React.FC<ControlsProps> = ({ gameState, playerId, onRoll, onBuy,
             disabled={gameState.turnPhase !== 'ROLL' || loading}
             className={`
                 flex-1 h-14 md:h-16 w-full md:w-auto min-w-[160px]
-                flex items-center justify-center
-                bg-gradient-to-r from-gold-600 to-gold-400 
-                text-black text-sm font-black tracking-[0.2em] uppercase 
-                rounded-md shadow-[0_0_20px_rgba(212,175,55,0.2)]
-                hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] hover:brightness-110
-                disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none
-                transition-all active:scale-[0.98]
+                flex items-center justify-center gap-2
+                bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700
+                text-black text-sm font-black tracking-[0.15em] uppercase 
+                rounded-lg shadow-[0_0_20px_rgba(212,175,55,0.3)]
+                border border-white/20
+                hover:shadow-[0_0_40px_rgba(212,175,55,0.5)] hover:scale-[1.02]
+                disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed disabled:shadow-none
+                transition-all duration-200 active:scale-[0.96]
                 ${gameState.turnPhase !== 'ROLL' ? 'hidden md:flex' : ''} 
             `}
             >
-            LANCIA {theme.label}
+            <span className="text-xl">🎲</span> LANCIA {theme.label}
             </button>
 
             {/* Secondary Action: BUY / MANAGE */}
@@ -76,11 +77,12 @@ const Controls: React.FC<ControlsProps> = ({ gameState, playerId, onRoll, onBuy,
             className={`
                 flex-1 h-14 md:h-16 w-full md:w-auto min-w-[160px]
                 flex items-center justify-center
-                border-2 transition-all active:scale-[0.98] rounded-md
+                border transition-all active:scale-[0.98] rounded-lg
                 text-xs md:text-sm font-black tracking-[0.1em] uppercase
+                shadow-lg
                 ${canBuy 
-                ? 'bg-finance-500/20 border-gold-500 text-gold-300 hover:bg-finance-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
-                : 'bg-white/5 border-white/10 text-slate-600 cursor-not-allowed'
+                ? 'bg-gradient-to-br from-emerald-900/80 to-emerald-950/90 border-emerald-500 text-emerald-400 hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:border-emerald-400' 
+                : 'bg-white/5 border-white/10 text-slate-500 cursor-not-allowed'
                 }
                 ${gameState.turnPhase !== 'ACTION' && gameState.turnPhase !== 'ROLL' ? 'hidden md:flex' : ''}
             `}

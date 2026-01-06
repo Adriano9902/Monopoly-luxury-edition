@@ -58,7 +58,7 @@ const CardModal: React.FC<CardModalProps> = ({ card, onConfirm }) => {
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 backdrop-blur-xl p-6">
       <div 
-        className={`relative w-full max-w-[320px] aspect-[2/3] transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isDrawn ? 'opacity-100 scale-100 translate-x-0 translate-y-0 rotate-0' : 'opacity-0 scale-50'}`}
+        className={`relative w-full max-w-[320px] aspect-[2/3] transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isDrawn ? 'opacity-100 scale-100 translate-x-0 translate-y-0 rotate-0' : 'opacity-0 scale-[0.2]'}`}
         style={{
             transform: !isDrawn ? `translate(${config.startX}, ${config.startY}) rotate(${config.startRot}) scale(0.2)` : undefined
         }}

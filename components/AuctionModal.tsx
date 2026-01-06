@@ -60,8 +60,8 @@ const AuctionModal: React.FC<AuctionModalProps> = ({
   const isUrgent = timeLeft <= 3;
 
   return (
-    <div className="fixed inset-0 z-[250] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4">
-      <div className="w-full max-w-4xl h-[85vh] flex flex-col md:flex-row bg-[#050505] border border-gold-500/30 rounded-lg shadow-[0_0_150px_rgba(217,154,28,0.15)] overflow-hidden animate-slide-up relative">
+    <div className="fixed inset-0 z-[250] flex items-end md:items-center justify-center bg-black/95 backdrop-blur-xl md:p-4">
+      <div className="w-full h-[90vh] md:h-[85vh] max-w-4xl flex flex-col md:flex-row bg-[#050505] border-t md:border border-gold-500/30 rounded-t-2xl md:rounded-lg shadow-[0_0_150px_rgba(217,154,28,0.15)] overflow-hidden animate-slide-up relative">
         
         {/* Timer Bar Overlay at Top */}
         <div className="absolute top-0 left-0 w-full h-2 bg-slate-800 z-50">
