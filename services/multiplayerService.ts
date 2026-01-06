@@ -4,10 +4,10 @@ import { ServerToClientEvents, ClientToServerEvents } from './multiplayerTypes';
 import { ClientAction, GameState } from '../types';
 
 // Server URL logic:
-// In production (Railway), use the same origin (relative path) because we expect the server to serve the frontend or be proxied correctly.
-// In development, use localhost:3001 (or whatever port the server runs on).
+// In production (Railway), use the same origin (relative path) but ensure correct protocol.
+// Socket.io client handles relative paths automatically if no URL is passed, but passing window.location.origin is safer.
 const SERVER_URL = import.meta.env.PROD 
-  ? window.location.origin // Use current origin in production
+  ? window.location.origin 
   : 'http://localhost:3000'; 
 
 class MultiplayerService {
@@ -19,8 +19,11 @@ class MultiplayerService {
     if (this.socket) return;
     
     this.socket = io(SERVER_URL, {
-      transports: ['websocket'],
-      autoConnect: true
+      transports: ['polling', 'websocket'], // Allow polling first for better compatibility
+      autoConnect: true,
+      path: '/socket.io/', // Explicit default path
+      reconnection: true,
+      reconnectionAttempts: 5
     });
 
     this.socket.on('connect', () => {
