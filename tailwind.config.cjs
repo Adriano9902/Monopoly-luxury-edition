@@ -22,7 +22,7 @@ module.exports = {
           dark: '#050505',
           blue: '#0a1128',
           card: '#121212'
-        }
+        },
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

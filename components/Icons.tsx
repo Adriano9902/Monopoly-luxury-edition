@@ -32,6 +32,15 @@ const GoldGradient = () => (
   </defs>
 );
 
+export const IconOracle: React.FC<IconProps> = ({ className, color = "url(#goldGrad)" }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} filter="url(#iconShadow)">
+    <GoldGradient />
+    <path d="M2.2 12s3.6-6.8 9.8-6.8S21.8 12 21.8 12s-3.6 6.8-9.8 6.8S2.2 12 2.2 12z" stroke={color} strokeWidth="1.6" />
+    <path d="M12 9.1a2.9 2.9 0 1 0 0 5.8a2.9 2.9 0 0 0 0-5.8z" fill={color} stroke="#000" strokeWidth="0.2" opacity="0.95" />
+    <path d="M12 10.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3z" fill="#000" opacity="0.25" />
+  </svg>
+);
+
 export const IconJet: React.FC<IconProps> = ({ className, color = "url(#goldGrad)" }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} filter="url(#iconShadow)">
     <GoldGradient />

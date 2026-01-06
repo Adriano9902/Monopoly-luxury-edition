@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { Tile, Player } from '../types';
-import { PlayerTokenIcon } from './Icons';
+import { IconDiamond, PlayerTokenIcon } from './Icons';
 
 interface PurchaseModalProps {
   tile: Tile;
@@ -51,8 +51,8 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ tile, player, onBuy, onAu
              {tile.customStyle?.icon ? (
                  <div className="text-4xl filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">{tile.customStyle.icon}</div>
              ) : (
-                <div className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center">
-                    <span className="text-2xl">🏛️</span>
+                <div className="w-12 h-12 rounded-full border border-gold-500/25 bg-black/40 flex items-center justify-center">
+                    <IconDiamond className="w-6 h-6" />
                 </div>
              )}
         </div>
@@ -71,7 +71,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ tile, player, onBuy, onAu
                     </div>
                 </div>
                 {priceDiscounted && (
-                    <div className="px-2 py-1 bg-emerald-500/20 border border-emerald-500/50 rounded-sm text-[9px] text-emerald-400 font-black uppercase tracking-widest animate-pulse">
+                    <div className="px-2 py-1 bg-finance-500/10 border border-gold-500/35 rounded-sm text-[9px] text-gold-200 font-black uppercase tracking-widest animate-pulse">
                         Sconto Business
                     </div>
                 )}
@@ -80,17 +80,17 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ tile, player, onBuy, onAu
             <div className="grid grid-cols-2 gap-4">
                 <div className="bg-black/40 p-3 rounded-sm border border-white/5">
                     <span className="block text-[8px] text-slate-500 uppercase font-bold mb-1">Rendita Stimata (Base)</span>
-                    <span className="block text-xl font-mono text-emerald-400 font-bold">${rentBase}M</span>
+                    <span className="block text-xl font-mono text-gold-400 font-bold">${rentBase}M</span>
                 </div>
                 <div className="bg-black/40 p-3 rounded-sm border border-white/5">
                     <span className="block text-[8px] text-slate-500 uppercase font-bold mb-1">Saldo Attuale</span>
-                    <span className={`block text-xl font-mono font-bold ${canAfford ? 'text-blue-400' : 'text-red-500'}`}>${player.money}M</span>
+                    <span className={`block text-xl font-mono font-bold ${canAfford ? 'text-gold-300' : 'text-danger-500'}`}>${player.money}M</span>
                 </div>
             </div>
             
             {!canAfford && (
-                <div className="text-center p-2 bg-red-900/20 border border-red-500/30 rounded-sm">
-                    <p className="text-[10px] text-red-400 uppercase font-black tracking-widest">Liquidità Insufficiente</p>
+                <div className="text-center p-2 bg-danger-500/10 border border-danger-500/35 rounded-sm">
+                    <p className="text-[10px] text-danger-500 uppercase font-black tracking-widest">Liquidità Insufficiente</p>
                 </div>
             )}
         </div>
@@ -101,14 +101,14 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ tile, player, onBuy, onAu
                 <button
                     onClick={onBuy}
                     disabled={!canAfford}
-                    className="flex-1 h-14 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-20 disabled:cursor-not-allowed text-white text-xs font-black uppercase tracking-widest rounded-sm transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] active:scale-95 flex items-center justify-center gap-2"
+                    className="flex-1 h-14 bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 disabled:opacity-20 disabled:cursor-not-allowed text-black text-xs font-black uppercase tracking-widest rounded-sm transition-all hover:shadow-[0_0_22px_rgba(212,175,55,0.30)] active:scale-95 flex items-center justify-center gap-2"
                 >
                     <span>ACQUISTA</span>
                     <span className="text-[10px] opacity-60">($ {finalPrice}M)</span>
                 </button>
                 <button
                     onClick={onAuction}
-                    className="flex-1 h-14 bg-amber-700 hover:bg-amber-600 text-white text-xs font-black uppercase tracking-widest rounded-sm transition-all hover:shadow-[0_0_20px_rgba(217,154,28,0.4)] active:scale-95 flex items-center justify-center gap-2"
+                    className="flex-1 h-14 bg-black/55 hover:bg-black/70 text-gold-200 text-xs font-black uppercase tracking-widest rounded-sm transition-all border border-gold-500/30 hover:border-gold-500/55 hover:shadow-[0_0_18px_rgba(212,175,55,0.18)] active:scale-95 flex items-center justify-center gap-2"
                 >
                     <span>ASTA</span>
                     <span className="text-[10px] opacity-60">(DA $10M)</span>

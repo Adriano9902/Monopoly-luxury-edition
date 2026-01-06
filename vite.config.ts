@@ -9,6 +9,17 @@ export default defineConfig(({ mode }) => {
         port: 3000,
         host: '0.0.0.0',
         allowedHosts: ['monopoly-luxury-edition.up.railway.app'],
+        proxy: {
+          '/ai': {
+            target: 'http://localhost:3001',
+            changeOrigin: true,
+            secure: false,
+          },
+          '/socket.io': {
+            target: 'http://localhost:3001',
+            ws: true,
+          }
+        }
       },
       plugins: [react()],
       define: {

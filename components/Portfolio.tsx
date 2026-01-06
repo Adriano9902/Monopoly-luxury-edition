@@ -14,17 +14,17 @@ interface PortfolioProps {
 }
 
 const CUSTOM_COLORS = [
-    { name: 'Neon Pink', hex: '#ec4899' },
-    { name: 'Cyber Cyan', hex: '#06b6d4' },
-    { name: 'Lime Acid', hex: '#84cc16' },
-    { name: 'Royal Purple', hex: '#a855f7' },
-    { name: 'Pure Gold', hex: '#eab308' },
-    { name: 'Matrix Green', hex: '#10b981' },
-    { name: 'Inferno Red', hex: '#ef4444' },
-    { name: 'Ice White', hex: '#f8fafc' },
+    { name: 'Oro Metallizzato', hex: '#d4af37' },
+    { name: 'Oro Scuro', hex: '#b8962e' },
+    { name: 'Grafite', hex: '#121212' },
+    { name: 'Nero Opaco', hex: '#0a0a0a' },
+    { name: 'Finanza (Petrolio)', hex: '#0f3d2e' },
+    { name: 'Pericolo (Truffa)', hex: '#7a0c0c' },
+    { name: 'Acciaio', hex: '#94a3b8' },
+    { name: 'Avorio', hex: '#f4e6b0' },
 ];
 
-const CUSTOM_ICONS = ['🏢', '💎', '🚀', '🎰', '🏛️', '🍸', '🥩', '👑', '🔌', '📡', '🐉', '👁️', '🤖', '🏭', '🛳️', '🌐', '🔋', '🧬'];
+const CUSTOM_ICONS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', '◇', '◆', '△', '▽', '◼', '◻', '⟡', '⟐'];
 
 const Portfolio: React.FC<PortfolioProps> = ({ player, gameState, onClose, onMortgage, onSell, onCustomize }) => {
   const [customizingTileId, setCustomizingTileId] = useState<number | null>(null);
@@ -76,7 +76,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ player, gameState, onClose, onMor
               <div className="flex gap-8 items-center">
                 <div className="flex flex-col">
                   <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Fondi Disponibili</span>
-                  <span className="text-2xl md:text-3xl font-mono text-emerald-400 font-bold leading-none shadow-emerald-500/20 drop-shadow-md">${player.money}M</span>
+                  <span className="text-2xl md:text-3xl font-mono text-gold-400 font-bold leading-none drop-shadow-md">${player.money}M</span>
                 </div>
                 <div className="w-[1px] h-8 bg-white/10"></div>
                 <div className="flex flex-col">
@@ -155,7 +155,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ player, gameState, onClose, onMor
                           
                           <button 
                             onClick={() => { onCustomize(customizingTileId, { borderColor: undefined, icon: undefined }); setCustomizingTileId(null); }}
-                            className="w-full py-3 border border-red-900/50 text-red-500 hover:bg-red-900/20 uppercase text-xs font-black tracking-widest rounded-sm transition-all"
+                            className="w-full py-3 border border-danger-500/50 text-danger-500 hover:bg-danger-500/10 uppercase text-xs font-black tracking-widest rounded-sm transition-all"
                           >
                             Reset Branding
                           </button>

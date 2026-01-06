@@ -2,7 +2,7 @@
 import React from 'react';
 import { GameState } from '../types';
 import Dice from './Dice';
-import { PlayerTokenIcon } from './Icons';
+import { IconOracle, PlayerTokenIcon } from './Icons';
 
 interface ControlsProps {
   gameState: GameState;
@@ -28,9 +28,9 @@ const Controls: React.FC<ControlsProps> = ({ gameState, playerId, onRoll, onBuy,
 
   const getTheme = () => {
     switch (gameState.activeDiceType) {
-        case 'TRUFFA': return { text: 'text-purple-500', bg: 'bg-purple-900/10', label: 'TRUFFA' };
+        case 'TRUFFA': return { text: 'text-danger-500', bg: 'bg-danger-500/10', label: 'TRUFFA' };
         case 'BUSINESS': return { text: 'text-gold-400', bg: 'bg-gold-900/10', label: 'BUSINESS' };
-        case 'CHAOS': return { text: 'text-red-500', bg: 'bg-red-900/10', label: 'CHAOS' };
+        case 'CHAOS': return { text: 'text-danger-500', bg: 'bg-danger-500/10', label: 'CHAOS' };
         default: return { text: 'text-slate-500', bg: 'bg-black', label: 'STANDARD' };
     }
   };
@@ -38,102 +38,89 @@ const Controls: React.FC<ControlsProps> = ({ gameState, playerId, onRoll, onBuy,
   const hasPendingDoubles = gameState.consecutiveDoubles > 0 && !currentPlayer.isJailed;
 
   return (
-    <div className={`h-20 px-4 md:px-6 flex items-center justify-between border-t border-white/10 ${theme.bg} shadow-2xl relative z-40 backdrop-blur-xl bg-black/60`}>
-      {/* Player Identity (Ultra Compact) */}
-      <div className="flex items-center gap-3 md:gap-4 w-1/4 min-w-[120px]">
-        <div className="relative">
-            <div className="w-12 h-12 bg-black border border-gold-500/30 rounded-full flex items-center justify-center p-2 shadow-lg">
-                {currentPlayer && <PlayerTokenIcon token={currentPlayer.token} className="w-full h-full" />}
-            </div>
-            {hasPendingDoubles && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 text-black text-[10px] font-black rounded-full flex items-center justify-center border border-black animate-bounce">X2</div>
-            )}
-        </div>
-        <div>
-          <div className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none mb-1 opacity-60">{currentPlayer?.name}</div>
-          <div className="text-xl font-mono text-emerald-400 font-black leading-none tracking-tighter">${currentPlayer?.money}M</div>
-        </div>
-      </div>
-
-      {/* Main Action Group (Sleek Toolbar) */}
-      <div className="flex-1 flex justify-center items-center gap-3 md:gap-4">
+    <div className="w-full bg-black/80 backdrop-blur-xl border-t border-gold-900/30 p-3 md:p-6 pb-6 md:pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] z-50">
+      {/* Mobile: Grid Layout for thumb reachability. Desktop: Flex row */}
+      <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6">
+        
         {!isMyTurn ? (
-           <div className="h-12 px-6 md:px-8 flex items-center justify-center bg-black/40 border border-white/5 rounded-sm w-full md:w-auto">
-             <span className="text-xs text-slate-500 font-black uppercase tracking-[0.2em] animate-pulse whitespace-nowrap">
-               Turno di {currentPlayer?.name}...
+           <div className="w-full h-12 md:h-14 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg animate-pulse">
+             <span className="text-xs md:text-sm text-slate-400 font-black uppercase tracking-[0.2em]">
+               In attesa di {currentPlayer?.name}...
              </span>
            </div>
         ) : (
         <>
-        <button
-          onClick={onRoll}
-          disabled={gameState.turnPhase !== 'ROLL' || loading}
-          className="h-12 px-6 md:px-10 bg-gradient-to-r from-gold-600 to-amber-700 text-black text-xs font-black tracking-[0.2em] md:tracking-[0.4em] uppercase rounded-sm hover:shadow-[0_0_30px_rgba(217,154,28,0.5)] disabled:opacity-10 transition-all transform active:scale-95 flex items-center justify-center group w-full md:w-auto min-w-[140px]"
-        >
-          <span className="group-hover:animate-pulse">LANCIA {theme.label}</span>
-        </button>
+            {/* Primary Action: ROLL */}
+            <button
+            onClick={onRoll}
+            disabled={gameState.turnPhase !== 'ROLL' || loading}
+            className={`
+                flex-1 h-14 md:h-16 w-full md:w-auto min-w-[160px]
+                flex items-center justify-center
+                bg-gradient-to-r from-gold-600 to-gold-400 
+                text-black text-sm font-black tracking-[0.2em] uppercase 
+                rounded-md shadow-[0_0_20px_rgba(212,175,55,0.2)]
+                hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] hover:brightness-110
+                disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none
+                transition-all active:scale-[0.98]
+                ${gameState.turnPhase !== 'ROLL' ? 'hidden md:flex' : ''} 
+            `}
+            >
+            LANCIA {theme.label}
+            </button>
 
-        <div className="h-10 w-px bg-white/10 hidden md:block"></div>
+            {/* Secondary Action: BUY / MANAGE */}
+            <button
+            onClick={onBuy}
+            disabled={gameState.turnPhase !== 'ACTION' || !canBuy || loading}
+            className={`
+                flex-1 h-14 md:h-16 w-full md:w-auto min-w-[160px]
+                flex items-center justify-center
+                border-2 transition-all active:scale-[0.98] rounded-md
+                text-xs md:text-sm font-black tracking-[0.1em] uppercase
+                ${canBuy 
+                ? 'bg-finance-500/20 border-gold-500 text-gold-300 hover:bg-finance-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+                : 'bg-white/5 border-white/10 text-slate-600 cursor-not-allowed'
+                }
+                ${gameState.turnPhase !== 'ACTION' && gameState.turnPhase !== 'ROLL' ? 'hidden md:flex' : ''}
+            `}
+            >
+            {isOwned ? `PROPRIETÀ DI ${owner?.name}` : `ACQUISTA $${currentTile.price || '---'}M`}
+            </button>
 
-        <button
-          onClick={onBuy}
-          disabled={gameState.turnPhase !== 'ACTION' || !canBuy || loading}
-          className={`h-12 px-4 md:px-8 text-xs font-black tracking-[0.1em] md:tracking-[0.3em] uppercase rounded-sm border transition-all w-full md:w-auto min-w-[140px] flex items-center justify-center ${
-            canBuy 
-              ? 'bg-emerald-900/20 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/40 hover:text-white' 
-              : 'bg-black/40 border-white/5 text-slate-700 cursor-not-allowed'
-          }`}
-        >
-          {isOwned ? `PROPRIETÀ DI ${owner?.name}` : `ACQUISTA ($${currentTile.price || '---'}M)`}
-        </button>
+            {/* Utility Group */}
+            <div className="flex gap-3 w-full md:w-auto">
+                {/* AI Consultant */}
+                <button
+                    onClick={onAiConsult}
+                    disabled={loading}
+                    className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-black border border-gold-500/30 text-gold-500 rounded-md hover:bg-gold-500/10 active:scale-95 transition-all"
+                >
+                    <IconOracle className="w-6 h-6" />
+                </button>
 
-        <button
-          onClick={onAiConsult}
-          disabled={loading}
-          className="h-12 w-12 flex-shrink-0 flex items-center justify-center bg-indigo-950/30 border border-indigo-500/30 text-indigo-400 rounded-full hover:bg-indigo-500 hover:text-white transition-all text-lg shadow-lg hover:shadow-indigo-500/20"
-          title="Consulenza Strategica AI"
-        >
-          🤖
-        </button>
-
-        <div className="h-10 w-px bg-white/10 hidden md:block"></div>
-
-        <button
-          onClick={onEndTurn}
-          disabled={!canEndTurn}
-          className={`h-10 px-8 text-[10px] font-black tracking-[0.3em] uppercase rounded-sm border transition-all ${
-            hasPendingDoubles
-                ? 'bg-emerald-600 border-emerald-400 text-white animate-pulse'
-                : gameState.turnPhase === 'END' 
-                    ? 'bg-red-900/60 border-red-500/60 text-white shadow-[0_0_20px_rgba(239,68,68,0.3)]' 
-                    : 'bg-black/60 border-white/10 text-slate-500'
-          } disabled:opacity-10`}
-        >
-          {hasPendingDoubles ? "TIRA DI NUOVO" : "FINE TURNO"}
-        </button>
+                {/* End Turn - Always visible if possible */}
+                <button
+                    onClick={onEndTurn}
+                    disabled={!canEndTurn}
+                    className={`
+                        flex-1 h-14 md:h-16 px-6 
+                        flex items-center justify-center
+                        border-2 rounded-md transition-all active:scale-[0.98]
+                        text-xs font-black tracking-[0.2em] uppercase
+                        ${hasPendingDoubles
+                            ? 'bg-gold-500 text-black border-gold-500 animate-pulse'
+                            : gameState.turnPhase === 'END' || (canEndTurn && gameState.turnPhase === 'ACTION')
+                                ? 'bg-danger-900/50 border-danger-500 text-white hover:bg-danger-900/80' 
+                                : 'bg-transparent border-white/10 text-slate-600 cursor-not-allowed'
+                        }
+                    `}
+                >
+                    {hasPendingDoubles ? "TIRA ANCORA" : "FINE TURNO"}
+                </button>
+            </div>
         </>
         )}
-      </div>
-
-      {/* Right Stats (Sleek HUD) */}
-      <div className="w-1/4 text-right flex items-center justify-end gap-6">
-        <div className="flex flex-col items-end">
-            <span className={`text-[8px] font-black tracking-[0.3em] uppercase mb-1 ${theme.text} animate-pulse`}>Status</span>
-            <span className="text-[10px] font-bold text-white uppercase tracking-wider">
-                {gameState.turnPhase === 'ROLL' ? 'Pronto' : 
-                 gameState.turnPhase === 'MOVING' ? 'In Transito' :
-                 gameState.turnPhase === 'ACTION' ? 'Operativo' : 'In attesa'}
-            </span>
-        </div>
-        
-        <div className="flex gap-1.5 p-1.5 bg-black/40 border border-white/5 rounded-sm">
-            <div className="w-6 h-6 bg-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono font-bold text-white">
-                {gameState.dice[0] || 1}
-            </div>
-            <div className="w-6 h-6 bg-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono font-bold text-white">
-                {gameState.dice[1] || 1}
-            </div>
-        </div>
       </div>
     </div>
   );

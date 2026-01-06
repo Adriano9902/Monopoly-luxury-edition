@@ -20,30 +20,30 @@ const CardModal: React.FC<CardModalProps> = ({ card, onConfirm }) => {
     switch(card.type) {
       case 'CHANCE': return { 
         label: 'IMPREVISTI', 
-        color: 'text-orange-400', 
-        border: 'border-orange-500', 
-        bg: 'from-orange-950 via-stone-900 to-black',
+        color: 'text-finance-500', 
+        border: 'border-finance-500/60', 
+        bg: 'from-finance-500/15 via-luxury-graphite to-black',
         startX: '-40%', startY: '-40%', startRot: '-15deg'
       };
       case 'COMMUNITY': return { 
         label: 'PROBABILITÀ', 
-        color: 'text-blue-400', 
-        border: 'border-blue-500', 
-        bg: 'from-blue-950 via-slate-900 to-black',
+        color: 'text-gold-300', 
+        border: 'border-gold-500/50', 
+        bg: 'from-luxury-graphite via-black to-black',
         startX: '40%', startY: '-40%', startRot: '15deg'
       };
       case 'TRUFFA': return { 
         label: 'OPERAZIONE TRUFFA', 
-        color: 'text-purple-400', 
-        border: 'border-purple-600 shadow-[0_0_20px_rgba(147,51,234,0.5)]', 
-        bg: 'from-purple-950 via-black to-slate-950',
+        color: 'text-danger-500', 
+        border: 'border-danger-500/70 shadow-[0_0_20px_rgba(122,12,12,0.35)]', 
+        bg: 'from-danger-500/15 via-black to-luxury-graphite',
         startX: '-40%', startY: '40%', startRot: '-10deg'
       };
       case 'MEGA_RICCHEZZE': return { 
         label: 'MEGA RICCHEZZE', 
         color: 'text-gold-400', 
-        border: 'border-gold-500 shadow-[0_0_30px_rgba(217,154,28,0.5)]', 
-        bg: 'from-gold-800 via-gold-950 to-black',
+        border: 'border-gold-500 shadow-[0_0_30px_rgba(212,175,55,0.35)]', 
+        bg: 'from-gold-700 via-black to-black',
         startX: '40%', startY: '40%', startRot: '10deg'
       };
       default: return { 
@@ -92,7 +92,7 @@ const CardModal: React.FC<CardModalProps> = ({ card, onConfirm }) => {
             </main>
 
             <footer className="mt-8 space-y-6 relative z-10">
-               <div className={`text-3xl font-mono font-black tracking-tighter ${card.value && card.value > 0 ? 'text-emerald-400' : 'text-rose-500'} drop-shadow-[0_0_10px_rgba(0,0,0,0.5)]`}>
+               <div className={`text-3xl font-mono font-black tracking-tighter ${card.value && card.value > 0 ? 'text-gold-400' : 'text-danger-500'} drop-shadow-[0_0_10px_rgba(0,0,0,0.5)]`}>
                  {card.actionType === 'MONEY' && card.value && card.value !== -1 && (
                     <span>{card.value > 0 ? '+' : ''}${Math.abs(card.value)}M</span>
                  )}
@@ -109,8 +109,8 @@ const CardModal: React.FC<CardModalProps> = ({ card, onConfirm }) => {
                   card.type === 'MEGA_RICCHEZZE' 
                     ? 'bg-gradient-to-r from-gold-600 to-gold-400 text-black shadow-gold-500/20' 
                     : card.type === 'TRUFFA'
-                    ? 'bg-gradient-to-r from-purple-800 to-purple-600 text-white shadow-purple-500/20'
-                    : 'bg-white text-black hover:bg-slate-200'
+                    ? 'bg-gradient-to-r from-danger-500 to-black text-white shadow-[0_0_22px_rgba(122,12,12,0.25)]'
+                    : 'bg-black/40 text-gold-200 border border-gold-500/35 hover:bg-black/55'
                 }`}
                >
                  Esegui Ordine

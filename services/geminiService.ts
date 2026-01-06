@@ -1,10 +1,9 @@
 
-import { GoogleGenAI, Type, Modality } from "@google/genai";
+import { Type, Modality } from "@google/genai";
 import { GameState, Tile, Player, TileType } from '../types';
 import { COLORS } from '../constants';
 
-const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+const ai = null;
 
 const SYSTEM_INSTRUCTION = `
 Sei "The Oracle", l'IA di trading algoritmico e consulente strategico supremo di "Monopoly Business & Lusso: Extreme Edition".
@@ -136,62 +135,13 @@ const analyzePortfolio = (player: Player, gameState: GameState) => {
 
 export const getTurnCommentary = async (player: Player, action: string, tile: Tile, gameState: GameState): Promise<string> => {
   try {
-    if (!ai) return "Analisi di mercato non disponibile: API Key assente.";
-    const analysis = analyzePortfolio(player, gameState);
-    
-    let specificTileContext = "";
-    switch (tile.type) {
-        case TileType.BLACK_MARKET:
-            specificTileContext = "ZONA: Mercato Nero. Alto rischio, alto rendimento.";
-            break;
-        case TileType.CRYPTO_EXCHANGE:
-            specificTileContext = "ZONA: Crypto Exchange. Volatilità estrema.";
-            break;
-        case TileType.SCAM_ACADEMY:
-            specificTileContext = "ZONA: Scam Academy. Formazione illegale.";
-            break;
-        case TileType.OIL_COMPANY:
-        case TileType.TECH_HUB:
-            specificTileContext = "ZONA: Industry Leader. Asset da dividendi.";
-            break;
-        case TileType.JAIL:
-            specificTileContext = "STATUS: Detenzione. Asset congelati.";
-            break;
-        default:
-            specificTileContext = `ZONA: ${tile.name} (${tile.type})`;
-    }
-
-    const context = `
-      DATI FINANZIARI GIOCATORE:
-      - Nome: ${player.name}
-      - Liquidità (Cash): $${player.money}M -> STATUS: ${analysis.liquidityStatus}
-      - Portfolio Strategico: ${analysis.strategicInsights}
-      - Consigli Liquidazione (Se Crisi): ${analysis.liquidationAdvice}
-      - Previsione Rischio Percorso: ${analysis.dangerAlert}
-      
-      CONTESTO ATTUALE:
-      - Posizione: ${specificTileContext}
-      - Proprietario Casella: ${tile.ownerId !== undefined && tile.ownerId !== null 
-          ? (tile.ownerId === player.id ? "PROPRIETÀ DEL GIOCATORE" : "RIVALE") 
-          : "IN VENDITA (Opportunità)"}
-      - Evento Globale: ${gameState.globalEventActive ? gameState.globalEventActive.title : 'Nessuno'}
-      
-      AZIONE APPENA ESEGUITA: ${action}
-    `;
-
-    const prompt = `Analizza la mossa e fornisci un consiglio tattico finanziario basato ESPLICITAMENTE sulla liquidità e sui monopoli del giocatore. NON USARE MARKDOWN.`;
-    
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: [{ role: 'user', parts: [{ text: context + "\n\n" + prompt }] }],
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        maxOutputTokens: 200,
-        temperature: 0.8 
-      }
+    const resp = await fetch('/ai/commentary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ player, action, tile, gameState })
     });
-
-    return response.text || "Analisi di mercato in corso...";
+    const data = await resp.json();
+    return data.text || "Analisi di mercato in corso...";
   } catch (error) {
     console.error("Gemini Commentary Error:", error);
     return "Analisi di mercato momentaneamente non disponibile. Trust the process.";
@@ -200,40 +150,12 @@ export const getTurnCommentary = async (player: Player, action: string, tile: Ti
 
 export const generateGlobalEvent = async (gameState: GameState): Promise<{ title: string, description: string, effectLabel: string, actionType: 'TAX_ALL' | 'GIVE_MONEY_ALL' | 'CHAOS_MOVE' }> => {
   try {
-    if (!ai) return {
-      title: "Mercato Stabile",
-      description: "Nessun evento globale per assenza API.",
-      effectLabel: "Nessun impatto",
-      actionType: 'GIVE_MONEY_ALL'
-    };
-    const prompt = `Genera un evento globale di mercato per Monopoly Extreme Edition che causi un impatto immediato.`;
-    
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
-      config: {
-        systemInstruction: "Sei un analista di borsa cinico. Genera un evento globale in JSON.",
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING },
-            description: { type: Type.STRING },
-            effectLabel: { type: Type.STRING, description: "Descrizione breve dell'effetto meccanico" },
-            actionType: { 
-              type: Type.STRING, 
-              enum: ['TAX_ALL', 'GIVE_MONEY_ALL', 'CHAOS_MOVE'],
-              description: "Tipo di azione meccanica da eseguire. TAX_ALL toglie soldi a tutti. GIVE_MONEY_ALL dà soldi a tutti." 
-            },
-          },
-          required: ["title", "description", "effectLabel", "actionType"],
-        },
-      }
+    const resp = await fetch('/ai/global-event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ gameState })
     });
-
-    const text = response.text;
-    if (!text) throw new Error("No response");
-    return JSON.parse(text);
+    return await resp.json();
   } catch (error) {
     console.error("Global Event Error:", error);
     return {
@@ -288,33 +210,15 @@ export const speakText = async (text: string) => {
   if (!clean) return;
 
   try {
-    if (!ai) return;
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-tts',
-      contents: [{ parts: [{ text: clean }] }],
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Kore' },
-          },
-        },
-      },
+    const resp = await fetch('/ai/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: clean })
     });
-
-    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-    if (base64Audio) {
-      // Use standard AudioContext
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      const audioContext = new AudioContextClass({ sampleRate: 24000 });
-      
-      const audioBytes = decode(base64Audio);
-      const audioBuffer = pcmToAudioBuffer(audioBytes, audioContext, 24000);
-      
-      const source = audioContext.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(audioContext.destination);
-      source.start();
+    const data = await resp.json();
+    if (data.audioBase64) {
+      const audio = new Audio(`data:${data.mime};base64,${data.audioBase64}`);
+      audio.play();
     }
   } catch (error: any) {
     // Graceful error handling for quota limits or model errors
