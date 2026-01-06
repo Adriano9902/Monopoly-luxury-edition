@@ -90,7 +90,16 @@ const App: React.FC = () => {
   };
 
   if (!gameState) {
-    return <Home onCreateGame={handleCreateGame} onJoinGame={handleJoinGame} isLoading={loading} />;
+    return (
+      <>
+        {error && (
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-[0_0_20px_rgba(220,38,38,0.5)] z-[200] animate-bounce font-bold border border-red-400">
+            ⚠️ {error}
+          </div>
+        )}
+        <Home onCreateGame={handleCreateGame} onJoinGame={handleJoinGame} isLoading={loading} error={error} />
+      </>
+    );
   }
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];

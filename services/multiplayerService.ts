@@ -41,6 +41,7 @@ class MultiplayerService {
       
       // Timeout to prevent infinite loading
       const timeout = setTimeout(() => {
+        console.error("Lobby creation timed out after 10s");
         reject(new Error("Connection timed out. Server not responding."));
       }, 10000);
 
@@ -55,6 +56,7 @@ class MultiplayerService {
 
       this.socket?.once('connect_error', (err) => {
         clearTimeout(timeout);
+        console.error("Socket connection error:", err);
         reject(new Error("Socket connection failed: " + err.message));
       });
     });

@@ -8,6 +8,7 @@ interface HomeProps {
   onCreateGame: (players: PlayerConfig[]) => void;
   onJoinGame: (gameId: string, playerName: string) => void;
   isLoading?: boolean;
+  error?: string | null;
 }
 
 const INVESTORS = [2, 3, 4, 5, 6, 7, 8] as const;
@@ -24,7 +25,7 @@ const TOKENS: PlayerToken[] = [
   PlayerToken.WATCH,
 ];
 
-const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading }) => {
+const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading, error }) => {
   const [step, setStep] = useState<1 | 2>(1);
   const [investors, setInvestors] = useState<(typeof INVESTORS)[number]>(2);
   const [mode, setMode] = useState<'CREATE' | 'JOIN'>('CREATE');
@@ -168,6 +169,14 @@ const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading }) => {
                   <h1 className="text-4xl md:text-5xl text-gold-gradient font-display font-black mb-3 tracking-tight drop-shadow-xl">
                     Monopoly Extreme
                   </h1>
+                  
+                  {error && (
+                    <div className="mb-6 bg-red-500/10 border border-red-500/50 p-4 rounded-lg text-red-200 text-xs font-mono uppercase tracking-wide">
+                        <span className="font-bold block mb-1 text-red-400">Connection Error</span>
+                        {error}
+                    </div>
+                  )}
+
                   <div className="text-[10px] uppercase tracking-[0.45em] text-slate-400 font-bold mb-10 ml-[0.45em]">
                     Seleziona il numero di investitori
                   </div>
@@ -242,6 +251,13 @@ const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading }) => {
                         </div>
                     )}
                   </div>
+
+                  {error && (
+                    <div className="mb-6 bg-red-500/10 border border-red-500/50 p-4 rounded-lg text-red-200 text-xs font-mono uppercase tracking-wide">
+                        <span className="font-bold block mb-1 text-red-400">Error</span>
+                        {error}
+                    </div>
+                  )}
 
                   {mode === 'CREATE' ? (
                       <>
