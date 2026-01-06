@@ -12,7 +12,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   'auth:hello': () => void;
-  'lobby:create': (payload: { playerName: string }) => void;
+  'lobby:create': (payload: { players: PlayerConfig[] }) => void;
   'lobby:join': (payload: { gameId: string, playerName: string }) => void;
   'lobby:ready': () => void;
   'game:start': () => void;

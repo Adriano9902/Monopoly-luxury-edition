@@ -8,7 +8,7 @@ import { ClientAction, GameState } from '../types';
 // In development, use localhost:3001 (or whatever port the server runs on).
 const SERVER_URL = import.meta.env.PROD 
   ? window.location.origin // Use current origin in production
-  : 'http://localhost:3001'; 
+  : 'http://localhost:3000'; 
 
 class MultiplayerService {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
