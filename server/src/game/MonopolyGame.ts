@@ -60,6 +60,10 @@ export class MonopolyGame {
   public initializeWithConfig(configs: PlayerConfig[], hostSocketId: string): Player {
     this.state.players = []; // Reset players
     
+    if (!Array.isArray(configs) || configs.length === 0) {
+      throw new Error("Invalid player configuration");
+    }
+
     // Create players from config
     configs.forEach((cfg, index) => {
         const isHost = index === 0; // First player is host by default logic

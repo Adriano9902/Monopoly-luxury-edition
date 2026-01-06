@@ -121,33 +121,64 @@ io.on('connection', (socket: Socket) => {
   console.log('Client connected:', socket.id);
 
   socket.on('lobby:create', (payload: { players: PlayerConfig[] }) => {
-    const gameId = gameManager.createGame();
-    const game = gameManager.getGame(gameId);
-    if (game) {
-      const hostPlayer = game.initializeWithConfig(payload.players, socket.id);
-      socket.join(gameId);
-      socket.emit('lobby:joined', { gameId, playerId: hostPlayer.id });
-      io.to(gameId).emit('game:snapshot', game.state);
+    try {
+      console.log('Received lobby:create request', JSON.stringify(payload));
+      if (!payload || !payload.players || !Array.isArray(payload.players)) {
+        throw new Error('Invalid payload: players array missing');
+      }
+
+      const gameId = gameManager.createGame();
+      const game = gameManager.getGame(gameId);
+      if (game) {
+        const hostPlayer = game.initializeWithConfig(payload.players, socket.id);
+        socket.join(gameId);
+        socket.emit('lobby:joined', { gameId, playerId: hostPlayer.id });
+        io.to(gameId).emit('game:snapshot', game.state);
+        console.log(`Game ${gameId} created by ${hostPlayer.name}`);
+      } else {
+        throw new Error('Failed to create game instance');
+      }
+    } catch (err: any) {
+      console.error('Error in lobby:create:', err);
+      socket.emit('game:error', { message: 'Failed to create lobby: ' + err.message });
     }
   });
 
   socket.on('lobby:join', (payload: { gameId: string, playerName: string }) => {
-    const game = gameManager.getGame(payload.gameId);
-    if (game) {
-      const player = game.addPlayer(socket.id, payload.playerName);
-      socket.join(payload.gameId);
-      socket.emit('lobby:joined', { gameId: payload.gameId, playerId: player.id });
-      io.to(payload.gameId).emit('game:snapshot', game.state);
-    } else {
-      socket.emit('game:error', { message: 'Game not found' });
+    try {
+      console.log('Received lobby:join request', JSON.stringify(payload));
+      if (!payload || !payload.gameId || !payload.playerName) {
+        throw new Error('Invalid payload: gameId or playerName missing');
+      }
+
+      const game = gameManager.getGame(payload.gameId);
+      if (game) {
+        const player = game.addPlayer(socket.id, payload.playerName);
+        socket.join(payload.gameId);
+        socket.emit('lobby:joined', { gameId: payload.gameId, playerId: player.id });
+        io.to(payload.gameId).emit('game:snapshot', game.state);
+        console.log(`Player ${payload.playerName} joined game ${payload.gameId}`);
+      } else {
+        socket.emit('game:error', { message: 'Game not found' });
+      }
+    } catch (err: any) {
+      console.error('Error in lobby:join:', err);
+      socket.emit('game:error', { message: 'Failed to join lobby: ' + err.message });
     }
   });
 
   socket.on('game:action', (payload: { gameId: string, action: ClientAction }) => {
-    const game = gameManager.getGame(payload.gameId);
-    if (game) {
-      game.handleAction(socket.id, payload.action);
-      io.to(payload.gameId).emit('game:snapshot', game.state);
+    try {
+      if (!payload || !payload.gameId || !payload.action) {
+        return; // Silent fail for actions to avoid spam
+      }
+      const game = gameManager.getGame(payload.gameId);
+      if (game) {
+        game.handleAction(socket.id, payload.action);
+        io.to(payload.gameId).emit('game:snapshot', game.state);
+      }
+    } catch (err) {
+      console.error('Error in game:action:', err);
     }
   });
 
