@@ -5,6 +5,7 @@ import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import cors from 'cors';
 import OpenAI from 'openai';
+import path from 'path';
 import { GameManager } from './game/GameManager';
 import { GameState, Player, PlayerToken, TileType, DiceType, LogEntry, ClientAction, ClientActionType, Card, Tile, PlayerConfig } from './types';
 
@@ -12,9 +13,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (_req, res) => {
-  res.status(200).send('Monopoly Luxury Edition Server is running');
-});
+// Serve static files from the React frontend app
+const clientDistPath = path.join(__dirname, '../../dist');
+app.use(express.static(clientDistPath));
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -154,6 +155,12 @@ io.on('connection', (socket: Socket) => {
     // Handle disconnect
     console.log('Client disconnected:', socket.id);
   });
+});
+
+// All other GET requests not handled before will return the React app
+app.get('*', (_req, res) => {
+  const clientDistPath = path.join(__dirname, '../../dist');
+  res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

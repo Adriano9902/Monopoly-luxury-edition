@@ -3,8 +3,12 @@ import { io, Socket } from 'socket.io-client';
 import { ServerToClientEvents, ClientToServerEvents } from './multiplayerTypes';
 import { ClientAction, GameState } from '../types';
 
-// Assuming server runs on localhost:3001 for now, or configurable via env
-const SERVER_URL = 'http://localhost:3001';
+// Server URL logic:
+// In production (Railway), use the same origin (relative path) because we expect the server to serve the frontend or be proxied correctly.
+// In development, use localhost:3001 (or whatever port the server runs on).
+const SERVER_URL = import.meta.env.PROD 
+  ? window.location.origin // Use current origin in production
+  : 'http://localhost:3001'; 
 
 class MultiplayerService {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;

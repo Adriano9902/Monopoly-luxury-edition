@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "node ./node_modules/vite/bin/vite.js",
-    "build": "node ./node_modules/vite/bin/vite.js build",
-    "preview": "node ./node_modules/vite/bin/vite.js preview"
+    "build": "node ./node_modules/vite/bin/vite.js build && cd server && npm install && npm run build",
+    "preview": "node ./node_modules/vite/bin/vite.js preview",
+    "start": "cd server && npm start"
   },
   "dependencies": {
     "@google/genai": "^1.30.0",
