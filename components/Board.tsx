@@ -217,17 +217,32 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onManualStep, act
       <div className="absolute inset-0 z-[200] pointer-events-none">
         {gameState.players.map((p, idx) => {
           const { x, y } = getTileCenter(p.position);
-          // Offset per overlapping players (spiral or grid)
+          // Offset calculation for multiple players on the same tile
           const playersOnSameTile = gameState.players.filter(pl => pl.position === p.position);
           let offsetX = 0;
           let offsetY = 0;
           
           if (playersOnSameTile.length > 1) {
              const playerIndexOnTile = playersOnSameTile.findIndex(pl => pl.id === p.id);
-             const angle = (360 / playersOnSameTile.length) * playerIndexOnTile;
-             const radius = 1.2; // %
-             offsetX = Math.cos(angle * Math.PI / 180) * radius;
-             offsetY = Math.sin(angle * Math.PI / 180) * radius;
+             const count = playersOnSameTile.length;
+             // Tile size is approx 5% to 14%. We want offset to be small (e.g. 1.5% of board)
+             const spacing = 1.8; 
+             
+             // Grid Layout for better visibility
+             if (count === 2) {
+                 offsetX = playerIndexOnTile === 0 ? -spacing/2 : spacing/2;
+                 offsetY = playerIndexOnTile === 0 ? -spacing/2 : spacing/2;
+             } else if (count === 3) {
+                 if (playerIndexOnTile === 0) { offsetX = 0; offsetY = -spacing; }
+                 else if (playerIndexOnTile === 1) { offsetX = -spacing; offsetY = spacing/2; }
+                 else { offsetX = spacing; offsetY = spacing/2; }
+             } else {
+                 // 2x2 or spiral for 4+
+                 const col = playerIndexOnTile % 2;
+                 const row = Math.floor(playerIndexOnTile / 2);
+                 offsetX = (col === 0 ? -spacing/2 : spacing/2);
+                 offsetY = (row === 0 ? -spacing/2 : spacing/2);
+             }
           }
 
           return (
@@ -238,7 +253,7 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onManualStep, act
                 left: `${x + offsetX}%`,
                 top: `${y + offsetY}%`,
                 transform: 'translate(-50%, -50%)',
-                zIndex: 60 + idx
+                zIndex: (gameState.currentPlayerIndex === idx ? 150 : 60) + idx
               }}
               draggable
               onDragStart={(e) => {

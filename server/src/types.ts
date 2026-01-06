@@ -65,11 +65,22 @@ export interface Tile {
   };
 }
 
-export interface Player {
-  id: number;
-  socketId: string; // Added for server
+export type PlayerType = 'HUMAN' | 'AI';
+
+export interface PlayerConfig {
   name: string;
   token: PlayerToken;
+  type: PlayerType;
+  isHost: boolean;
+}
+
+export interface Player {
+  id: number;
+  socketId?: string; // Optional for AI
+  name: string;
+  token: PlayerToken;
+  type: PlayerType;
+  isAi: boolean;
   money: number;
   position: number;
   isJailed: boolean;

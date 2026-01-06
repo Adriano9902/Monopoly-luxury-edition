@@ -33,6 +33,15 @@ export enum PlayerToken {
   WATCH = 'WATCH'
 }
 
+export type PlayerType = 'HUMAN' | 'AI';
+
+export interface PlayerConfig {
+  name: string;
+  token: PlayerToken;
+  type: PlayerType;
+  isHost: boolean;
+}
+
 export type DiceType = 'STANDARD' | 'TRUFFA' | 'BUSINESS' | 'CHAOS';
 
 export interface Card {
@@ -70,6 +79,8 @@ export interface Player {
   socketId?: string; // Added for multiplayer
   name: string;
   token: PlayerToken;
+  type: PlayerType;
+  isAi: boolean;
   money: number;
   position: number;
   isJailed: boolean;

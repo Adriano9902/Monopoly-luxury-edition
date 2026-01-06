@@ -1,6 +1,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
-import { GameState, Player, PlayerToken, TileType, DiceType, LogEntry, ClientAction, ClientActionType, Card, Tile } from '../types';
+import { GameState, Player, PlayerToken, TileType, DiceType, LogEntry, ClientAction, ClientActionType, Card, Tile, PlayerConfig } from '../types';
 import { GAME_TILES, CHANCE_CARDS_GENERIC, COMMUNITY_CARDS, TRUFFA_CARDS, MEGA_RICCHEZZE_CARDS, BOARD_SIZE } from '../constants';
 
 export class MonopolyGame {
@@ -41,6 +41,8 @@ export class MonopolyGame {
       socketId,
       name,
       token,
+      type: 'HUMAN',
+      isAi: false,
       money: 1500, // Starting money standard
       position: 0,
       isJailed: false,
@@ -55,6 +57,34 @@ export class MonopolyGame {
     return newPlayer;
   }
 
+  public initializeWithConfig(configs: PlayerConfig[], hostSocketId: string): Player {
+    this.state.players = []; // Reset players
+    
+    // Create players from config
+    configs.forEach((cfg, index) => {
+        const isHost = index === 0; // First player is host by default logic
+        const player: Player = {
+            id: index + 1,
+            socketId: isHost ? hostSocketId : undefined, // Only host has socket initially in local/hotseat
+            name: cfg.name,
+            token: cfg.token,
+            type: cfg.type,
+            isAi: cfg.type === 'AI',
+            money: 1500,
+            position: 0,
+            isJailed: false,
+            jailTurns: 0,
+            properties: [],
+            cards: [],
+            nextDiceType: 'STANDARD'
+        };
+        this.state.players.push(player);
+    });
+
+    this.addLog(`Game started with ${configs.length} players.`, 'INFO');
+    return this.state.players[0]; // Return host
+  }
+
   public removePlayer(socketId: string) {
     const index = this.state.players.findIndex(p => p.socketId === socketId);
     if (index !== -1) {
@@ -66,11 +96,24 @@ export class MonopolyGame {
   }
 
   public handleAction(socketId: string, action: ClientAction): GameState {
-    const player = this.state.players.find(p => p.socketId === socketId);
+    // Determine which player is acting based on context
+    // 1. If it's the current player's turn, check if the socket matches the current player
+    //    This resolves Hotseat ambiguity (multiple players, same socket)
+    let player: Player | undefined;
+    const currentPlayer = this.state.players[this.state.currentPlayerIndex];
+    
+    // Priority to Current Player for turn-based actions
+    if (currentPlayer && currentPlayer.socketId === socketId) {
+        player = currentPlayer;
+    } else {
+        // Fallback: Find first player with this socket (e.g. for Auctions or Chat)
+        player = this.state.players.find(p => p.socketId === socketId);
+    }
+
     if (!player) return this.state;
     
     // Check if it's player's turn (unless it's an auction bid which can be anyone)
-    if (action.type !== 'BID_AUCTION' && this.state.players[this.state.currentPlayerIndex]?.id !== player.id) {
+    if (action.type !== 'BID_AUCTION' && currentPlayer?.id !== player.id) {
        // Allow some out-of-turn actions? For now, strict turn based.
        return this.state;
     }

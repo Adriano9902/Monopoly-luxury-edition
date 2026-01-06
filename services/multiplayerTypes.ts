@@ -1,5 +1,5 @@
 
-import { GameState, ClientAction } from '../types';
+import { GameState, ClientAction, PlayerConfig } from '../types';
 
 export interface ServerToClientEvents {
   'lobby:state': (state: any) => void;

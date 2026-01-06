@@ -28,11 +28,11 @@ class MultiplayerService {
     });
   }
 
-  public createLobby(playerName: string): Promise<{ gameId: string, playerId: number }> {
+  public createLobby(players: any[]): Promise<{ gameId: string, playerId: number }> {
     return new Promise((resolve) => {
       if (!this.socket) this.connect();
       
-      this.socket?.emit('lobby:create', { playerName });
+      this.socket?.emit('lobby:create', { players });
       
       this.socket?.once('lobby:joined', (data) => {
         this.gameId = data.gameId;

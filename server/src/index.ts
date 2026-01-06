@@ -6,7 +6,7 @@ import { Server, Socket } from 'socket.io';
 import cors from 'cors';
 import OpenAI from 'openai';
 import { GameManager } from './game/GameManager';
-import { ClientAction } from './types';
+import { GameState, Player, PlayerToken, TileType, DiceType, LogEntry, ClientAction, ClientActionType, Card, Tile, PlayerConfig } from './types';
 
 const app = express();
 app.use(cors());
@@ -119,13 +119,13 @@ app.post('/ai/tts', async (req, res) => {
 io.on('connection', (socket: Socket) => {
   console.log('Client connected:', socket.id);
 
-  socket.on('lobby:create', (payload: { playerName: string }) => {
+  socket.on('lobby:create', (payload: { players: PlayerConfig[] }) => {
     const gameId = gameManager.createGame();
     const game = gameManager.getGame(gameId);
     if (game) {
-      const player = game.addPlayer(socket.id, payload.playerName);
+      const hostPlayer = game.initializeWithConfig(payload.players, socket.id);
       socket.join(gameId);
-      socket.emit('lobby:joined', { gameId, playerId: player.id });
+      socket.emit('lobby:joined', { gameId, playerId: hostPlayer.id });
       io.to(gameId).emit('game:snapshot', game.state);
     }
   });

@@ -57,10 +57,10 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const handleCreateGame = async (playerName: string) => {
+  const handleCreateGame = async (players: PlayerConfig[]) => {
     setLoading(true);
     try {
-      const data = await multiplayerService.createLobby(playerName);
+      const data = await multiplayerService.createLobby(players);
       setGameId(data.gameId);
       setPlayerId(data.playerId);
       setConnected(true);
