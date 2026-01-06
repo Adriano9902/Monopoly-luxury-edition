@@ -8,7 +8,7 @@ import { ClientAction, GameState } from '../types';
 // Socket.io client handles relative paths automatically if no URL is passed, but passing window.location.origin is safer.
 const SERVER_URL = import.meta.env.PROD 
   ? window.location.origin 
-  : 'http://localhost:3000'; 
+  : 'http://localhost:3001'; 
 
 class MultiplayerService {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;

@@ -11,12 +11,12 @@ export default defineConfig(({ mode }) => {
         allowedHosts: ['monopoly-luxury-edition.up.railway.app'],
         proxy: {
           '/ai': {
-            target: 'http://localhost:3000',
+            target: 'http://localhost:3001',
             changeOrigin: true,
             secure: false,
           },
           '/socket.io': {
-            target: 'http://localhost:3000',
+            target: 'http://localhost:3001',
             ws: true,
             changeOrigin: true,
             secure: false,
