@@ -29,7 +29,6 @@ const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading, error 
   const [step, setStep] = useState<1 | 2>(1);
   const [investors, setInvestors] = useState<(typeof INVESTORS)[number]>(2);
   const [mode, setMode] = useState<'CREATE' | 'JOIN'>('CREATE');
-  const [error, setError] = useState<string | null>(null); // Added error state
   
   // New State for Multi-Player Config
   const [players, setPlayers] = useState<PlayerConfig[]>([]);
