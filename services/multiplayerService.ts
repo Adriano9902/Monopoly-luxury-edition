@@ -36,15 +36,26 @@ class MultiplayerService {
   }
 
   public createLobby(players: any[]): Promise<{ gameId: string, playerId: number }> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (!this.socket) this.connect();
       
+      // Timeout to prevent infinite loading
+      const timeout = setTimeout(() => {
+        reject(new Error("Connection timed out. Server not responding."));
+      }, 10000);
+
       this.socket?.emit('lobby:create', { players });
       
       this.socket?.once('lobby:joined', (data) => {
+        clearTimeout(timeout);
         this.gameId = data.gameId;
         this.playerId = data.playerId;
         resolve(data);
+      });
+
+      this.socket?.once('connect_error', (err) => {
+        clearTimeout(timeout);
+        reject(new Error("Socket connection failed: " + err.message));
       });
     });
   }
@@ -53,16 +64,27 @@ class MultiplayerService {
     return new Promise((resolve, reject) => {
       if (!this.socket) this.connect();
 
+      const timeout = setTimeout(() => {
+        reject(new Error("Connection timed out. Server not responding."));
+      }, 10000);
+
       this.socket?.emit('lobby:join', { gameId, playerName });
 
       this.socket?.once('lobby:joined', (data) => {
+        clearTimeout(timeout);
         this.gameId = data.gameId;
         this.playerId = data.playerId;
         resolve(data);
       });
 
       this.socket?.once('game:error', (err) => {
+        clearTimeout(timeout);
         reject(err.message);
+      });
+      
+      this.socket?.once('connect_error', (err) => {
+        clearTimeout(timeout);
+        reject(new Error("Socket connection failed: " + err.message));
       });
     });
   }
