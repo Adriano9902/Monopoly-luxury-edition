@@ -262,11 +262,11 @@ const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading, error 
                     </div>
                     {mode === 'CREATE' && (
                         <div className="flex flex-col items-center justify-center bg-black/40 border border-white/10 px-4 py-2 rounded-lg">
-                        <span className="text-2xl font-display text-gold-400">{String(investors).padStart(2, '0')}</span>
-                        <span className="text-[8px] uppercase tracking-widest text-slate-600">Players</span>
-                        </div>
-                    )}
-                  </div>
+                    <span className="text-2xl font-display text-gold-400">{String(investors).padStart(2, '0')}</span>
+                    <span className="text-[8px] uppercase tracking-widest text-slate-600">Players</span>
+                </div>
+            )}
+          </div>
 
                   {error && (
                     <div className="mb-6 bg-red-500/10 border border-red-500/50 p-4 rounded-lg text-red-200 text-xs font-mono uppercase tracking-wide">
