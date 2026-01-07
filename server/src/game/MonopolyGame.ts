@@ -18,6 +18,7 @@ export class MonopolyGame {
       remainingSteps: 0,
       consecutiveDoubles: 0,
       turnPhase: 'ROLL',
+      gameStatus: 'LOBBY',
       gameLog: [],
       globalEventActive: null,
       currentCard: null,
