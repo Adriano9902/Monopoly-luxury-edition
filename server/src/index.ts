@@ -196,5 +196,5 @@ app.get('*', (_req, res) => {
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server listening on port ${PORT} and host 0.0.0.0`);
+  console.log(`Server v2.0 listening on port ${PORT} and host 0.0.0.0`);
 });

@@ -144,7 +144,7 @@ const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading, error 
            <div className="inline-block mb-2">
               <div className="h-px w-24 bg-gradient-to-r from-transparent via-gold-500/50 to-transparent mx-auto mb-2"></div>
               <div className="text-[10px] uppercase tracking-[0.6em] text-gold-shine font-black ml-[0.6em]">
-                Business & Luxury Simulator
+                Business & Luxury Simulator v2.0
               </div>
               <div className="h-px w-24 bg-gradient-to-r from-transparent via-gold-500/50 to-transparent mx-auto mt-2"></div>
            </div>
