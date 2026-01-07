@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Board from './components/Board';
 import Controls from './components/Controls';
 import Home from './components/Home';
@@ -9,6 +9,7 @@ import CardModal from './components/CardModal';
 import StartAnimation from './components/StartAnimation';
 import { GameState, ClientAction, PlayerConfig } from './types';
 import { multiplayerService } from './services/multiplayerService';
+import { LocalGameManager } from './src/game/LocalGameManager';
 import { getTurnCommentary } from './services/geminiService';
 import { IconOracle } from './components/Icons';
 
@@ -18,6 +19,9 @@ import DebugPanel from './components/DebugPanel';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameMode, setGameMode] = useState<'LOCAL' | 'ONLINE' | null>(null);
+  const localGame = useRef<LocalGameManager | null>(null);
+
   const [showDebug, setShowDebug] = useState(false);
   const [connected, setConnected] = useState(false);
   const [gameId, setGameId] = useState<string | null>(null);
@@ -32,62 +36,92 @@ const App: React.FC = () => {
   const [dismissedCardId, setDismissedCardId] = useState<string | null>(null);
 
   useEffect(() => {
-    multiplayerService.connect();
-    
+    // Online listeners
     multiplayerService.onGameStateUpdate((newState) => {
-      setGameState(newState);
-      setLoading(false);
+      if (gameMode === 'ONLINE') {
+        setGameState(newState);
+        setLoading(false);
+      }
     });
 
     multiplayerService.onGameError((err) => {
-      setError(err.message);
-      setLoading(false);
-      setTimeout(() => setError(null), 5000);
+      if (gameMode === 'ONLINE') {
+        setError(err.message);
+        setLoading(false);
+        setTimeout(() => setError(null), 5000);
+      }
     });
 
     multiplayerService.onLobbyJoined((data) => {
-       setGameId(data.gameId);
-       setPlayerId(data.playerId);
-       setConnected(true);
-       setShowStartAnimation(true);
-       setTimeout(() => setShowStartAnimation(false), 4000);
+       if (gameMode === 'ONLINE') {
+         setGameId(data.gameId);
+         setPlayerId(data.playerId);
+         setConnected(true);
+         setShowStartAnimation(true);
+         setTimeout(() => setShowStartAnimation(false), 4000);
+       }
     });
 
     return () => {
       multiplayerService.disconnect();
     };
-  }, []);
+  }, [gameMode]);
+
+  // Sync playerId in Local Mode to current turn
+  useEffect(() => {
+    if (gameMode === 'LOCAL' && gameState) {
+        const current = gameState.players[gameState.currentPlayerIndex];
+        if (current) setPlayerId(current.id);
+    }
+  }, [gameState, gameMode]);
 
   const handleCreateGame = async (players: PlayerConfig[]) => {
+    setGameMode('ONLINE');
     setLoading(true);
+    multiplayerService.connect();
     try {
       const data = await multiplayerService.createLobby(players);
-      setGameId(data.gameId);
-      setPlayerId(data.playerId);
-      setConnected(true);
+      // State updates handled by socket events
     } catch (e: any) {
       setError(e.toString());
       setLoading(false);
+      setGameMode(null);
     }
   };
 
   const handleJoinGame = async (gId: string, playerName: string) => {
+    setGameMode('ONLINE');
     setLoading(true);
+    multiplayerService.connect();
     try {
-      const data = await multiplayerService.joinLobby(gId, playerName);
-      setGameId(data.gameId);
-      setPlayerId(data.playerId);
-      setConnected(true);
+      await multiplayerService.joinLobby(gId, playerName);
     } catch (e: any) {
       setError(e.toString());
       setLoading(false);
+      setGameMode(null);
     }
   };
 
+  const handleLocalStart = (players: PlayerConfig[]) => {
+    setGameMode('LOCAL');
+    const manager = new LocalGameManager();
+    manager.initializeGame(players);
+    manager.subscribe(setGameState);
+    localGame.current = manager;
+    setGameId('LOCAL');
+    setShowStartAnimation(true);
+    setTimeout(() => setShowStartAnimation(false), 4000);
+  };
+
   const sendAction = (type: ClientAction['type'], payload?: any) => {
-    if (!gameId) return;
-    setLoading(true);
-    multiplayerService.sendAction(gameId, { type, payload });
+    if (gameMode === 'ONLINE') {
+        if (!gameId) return;
+        setLoading(true);
+        multiplayerService.sendAction(gameId, { type, payload });
+    } else if (gameMode === 'LOCAL' && localGame.current) {
+        // In local, no loading delay needed usually, but maybe for effect?
+        localGame.current.handleAction({ type, payload });
+    }
   };
 
   if (!gameState) {
@@ -98,7 +132,13 @@ const App: React.FC = () => {
             ⚠️ {error}
           </div>
         )}
-        <Home onCreateGame={handleCreateGame} onJoinGame={handleJoinGame} isLoading={loading} error={error} />
+        <Home 
+            onCreateGame={handleCreateGame} 
+            onJoinGame={handleJoinGame} 
+            onLocalStart={handleLocalStart}
+            isLoading={loading} 
+            error={error} 
+        />
       </>
     );
   }

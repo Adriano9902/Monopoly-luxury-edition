@@ -93,7 +93,11 @@ const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading, error 
   const handleCreate = () => {
     if (players.some(p => !p.name.trim())) return;
     audioService.playPurchase();
-    onCreateGame(players);
+    if (mode === 'LOCAL' && onLocalStart) {
+        onLocalStart(players);
+    } else {
+        onCreateGame(players);
+    }
   };
 
   const handleJoin = () => {
@@ -199,26 +203,39 @@ const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading, error 
                     })}
                   </div>
 
-                  <div className="flex gap-4 justify-center">
+                    <div className="flex gap-4 justify-center">
                     <button
                         onClick={() => {
+                        setLocalMode(false);
                         setMode('CREATE');
                         setStep(2);
                         }}
                         className="group relative flex-1 py-4 bg-gradient-to-b from-gold-400 via-gold-500 to-gold-600 text-black font-black uppercase tracking-[0.3em] rounded-sm shadow-[0_5px_20px_rgba(217,154,28,0.15)] hover:shadow-[0_10px_30px_rgba(217,154,28,0.3)] transition-all transform hover:-translate-y-0.5 overflow-hidden text-xs"
                     >
-                        <span className="relative z-10">Configura Partita</span>
+                        <span className="relative z-10">Online Lobby</span>
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 blur-md"></div>
                     </button>
                     
                     <button
                         onClick={() => {
+                        setLocalMode(true);
+                        setMode('LOCAL');
+                        setStep(2);
+                        }}
+                        className="flex-1 py-4 border border-gold-500/30 bg-black/40 text-gold-200 hover:text-white hover:bg-gold-500/10 font-bold uppercase tracking-[0.2em] rounded-sm transition-all text-xs"
+                    >
+                        Locale (Hotseat)
+                    </button>
+
+                    <button
+                        onClick={() => {
+                        setLocalMode(false);
                         setMode('JOIN');
                         setStep(2);
                         }}
                         className="flex-1 py-4 border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 font-bold uppercase tracking-[0.2em] rounded-sm transition-all text-xs"
                     >
-                        Unisciti a Lobby
+                        Unisciti
                     </button>
                   </div>
 
@@ -258,7 +275,7 @@ const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading, error 
                     </div>
                   )}
 
-                  {mode === 'CREATE' ? (
+                  {mode === 'CREATE' || mode === 'LOCAL' ? (
                       <>
                         <div className="grid grid-cols-1 gap-4 mb-8 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
                             {players.map((player, idx) => (
