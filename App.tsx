@@ -102,6 +102,24 @@ const App: React.FC = () => {
     );
   }
 
+  if (gameState.gameStatus === 'LOBBY') {
+    return (
+      <Lobby
+        gameState={gameState}
+        playerId={playerId || -1}
+        onStartGame={() => sendAction('START_GAME')}
+        onCopyInvite={() => {
+          if (gameId) {
+            navigator.clipboard.writeText(gameId).then(() => {
+               // Optional: Toast feedback handled by button or parent
+               alert(`Codice Lobby copiato: ${gameId}`);
+            });
+          }
+        }}
+      />
+    );
+  }
+
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isMyTurn = currentPlayer?.id === playerId;
   const currentTile = gameState.tiles[currentPlayer.position];

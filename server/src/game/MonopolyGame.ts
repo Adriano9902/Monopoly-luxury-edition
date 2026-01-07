@@ -116,6 +116,20 @@ export class MonopolyGame {
 
     if (!player) return this.state;
     
+    // Handle Lobby Start
+    if (action.type === 'START_GAME') {
+        // Only host (first player) can start
+        if (this.state.players[0].id === player.id) {
+            this.state.gameStatus = 'PLAYING';
+            this.addLog(`Game Started by ${player.name}!`, 'SUCCESS');
+        }
+        return this.state;
+    }
+
+    if (this.state.gameStatus === 'LOBBY') {
+        return this.state; // Block other actions in lobby
+    }
+    
     // Check if it's player's turn (unless it's an auction bid which can be anyone)
     if (action.type !== 'BID_AUCTION' && currentPlayer?.id !== player.id) {
        // Allow some out-of-turn actions? For now, strict turn based.

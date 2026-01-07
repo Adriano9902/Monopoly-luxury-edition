@@ -120,6 +120,7 @@ export interface GameState {
   remainingSteps: number;
   consecutiveDoubles: number; 
   turnPhase: 'ROLL' | 'MOVING' | 'ACTION' | 'END';
+  gameStatus: 'LOBBY' | 'PLAYING' | 'FINISHED';
   gameLog: LogEntry[];
   globalEventActive: { title: string, description: string } | null;
   currentCard: null | Card;
