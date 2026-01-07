@@ -136,7 +136,8 @@ export type ClientActionType =
   | 'BID_AUCTION' 
   | 'USE_CARD' 
   | 'ATTEMPT_FRAUD' 
-  | 'JAIL_CHOICE';
+  | 'JAIL_CHOICE'
+  | 'START_GAME';
 
 export interface ClientAction {
   type: ClientActionType;

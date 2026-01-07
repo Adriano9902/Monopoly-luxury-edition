@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Board from './components/Board';
 import Controls from './components/Controls';
 import Home from './components/Home';
+import Lobby from './components/Lobby';
 import PurchaseModal from './components/PurchaseModal';
 import AuctionModal from './components/AuctionModal';
 import CardModal from './components/CardModal';
