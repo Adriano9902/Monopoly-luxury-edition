@@ -54,6 +54,12 @@ class MultiplayerService {
         resolve(data);
       });
 
+      this.socket?.once('game:error', (err) => {
+        clearTimeout(timeout);
+        console.error("Game error during lobby creation:", err);
+        reject(new Error(err.message));
+      });
+
       this.socket?.once('connect_error', (err) => {
         clearTimeout(timeout);
         console.error("Socket connection error:", err);
