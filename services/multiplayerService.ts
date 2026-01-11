@@ -19,8 +19,8 @@ class MultiplayerService {
     if (this.socket) return;
     
     this.socket = io(SERVER_URL, {
-      transports: ['websocket'], // Force websocket only to avoid polling issues on Railway
-      upgrade: false,
+      transports: ['polling', 'websocket'], // Allow polling fallback
+      upgrade: true,
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 10,
