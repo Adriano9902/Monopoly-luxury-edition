@@ -19,11 +19,13 @@ class MultiplayerService {
     if (this.socket) return;
     
     this.socket = io(SERVER_URL, {
-      transports: ['polling', 'websocket'], // Allow polling first for better compatibility
+      transports: ['websocket'], // Force websocket only to avoid polling issues on Railway
+      upgrade: false,
       autoConnect: true,
-      path: '/socket.io/', // Explicit default path
       reconnection: true,
-      reconnectionAttempts: 5
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      timeout: 20000
     });
 
     this.socket.on('connect', () => {
