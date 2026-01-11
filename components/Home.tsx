@@ -25,7 +25,7 @@ const TOKENS: PlayerToken[] = [
   PlayerToken.WATCH,
 ];
 
-const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, isLoading, error }) => {
+const Home: React.FC<HomeProps> = ({ onCreateGame, onJoinGame, onLocalStart, isLoading, error }) => {
   const [step, setStep] = useState<1 | 2>(1);
   const [investors, setInvestors] = useState<(typeof INVESTORS)[number]>(2);
   const [mode, setMode] = useState<'CREATE' | 'JOIN' | 'LOCAL'>('CREATE');
